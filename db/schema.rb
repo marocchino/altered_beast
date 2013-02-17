@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090317123901) do
+ActiveRecord::Schema.define(:version => 20130217032613) do
 
   create_table "brain_busters", :force => true do |t|
     t.string "question"
@@ -32,6 +32,14 @@ ActiveRecord::Schema.define(:version => 20090317123901) do
 
   add_index "forums", ["position", "site_id"], :name => "index_forums_on_position_and_site_id"
   add_index "forums", ["site_id", "permalink"], :name => "index_forums_on_site_id_and_permalink"
+
+  create_table "levels", :force => true do |t|
+    t.integer  "number"
+    t.string   "display_name"
+    t.integer  "required_score", :default => 0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "moderatorships", :force => true do |t|
     t.integer  "forum_id"
