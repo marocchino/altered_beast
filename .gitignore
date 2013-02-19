@@ -12,3 +12,4 @@ public/javascripts/beast.js
 .bundle
 *.tmproj
 .*.sw*
+rails_best_practices_output.html
