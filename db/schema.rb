@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130217032613) do
+ActiveRecord::Schema.define(:version => 20130219004650) do
 
   create_table "brain_busters", :force => true do |t|
     t.string "question"
@@ -41,12 +41,17 @@ ActiveRecord::Schema.define(:version => 20130217032613) do
     t.datetime "updated_at"
   end
 
+  add_index "levels", ["required_score"], :name => "index_levels_on_required_score"
+
   create_table "moderatorships", :force => true do |t|
     t.integer  "forum_id"
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "moderatorships", ["forum_id"], :name => "index_moderatorships_on_forum_id"
+  add_index "moderatorships", ["user_id"], :name => "index_moderatorships_on_user_id"
 
   create_table "monitorships", :force => true do |t|
     t.integer  "user_id"
@@ -55,6 +60,9 @@ ActiveRecord::Schema.define(:version => 20130217032613) do
     t.datetime "updated_at"
     t.boolean  "active",     :default => true
   end
+
+  add_index "monitorships", ["topic_id"], :name => "index_monitorships_on_topic_id"
+  add_index "monitorships", ["user_id"], :name => "index_monitorships_on_user_id"
 
   create_table "open_id_authentication_associations", :force => true do |t|
     t.binary  "server_url"
@@ -89,6 +97,7 @@ ActiveRecord::Schema.define(:version => 20130217032613) do
   add_index "posts", ["created_at", "forum_id"], :name => "index_posts_on_forum_id"
   add_index "posts", ["created_at", "topic_id"], :name => "index_posts_on_topic_id"
   add_index "posts", ["created_at", "user_id"], :name => "index_posts_on_user_id"
+  add_index "posts", ["site_id"], :name => "index_posts_on_site_id"
 
   create_table "sites", :force => true do |t|
     t.string   "name"
@@ -121,7 +130,10 @@ ActiveRecord::Schema.define(:version => 20130217032613) do
 
   add_index "topics", ["forum_id", "permalink"], :name => "index_topics_on_forum_id_and_permalink"
   add_index "topics", ["last_updated_at", "forum_id"], :name => "index_topics_on_forum_id_and_last_updated_at"
+  add_index "topics", ["last_user_id"], :name => "index_topics_on_last_user_id"
+  add_index "topics", ["site_id"], :name => "index_topics_on_site_id"
   add_index "topics", ["sticky", "last_updated_at", "forum_id"], :name => "index_topics_on_sticky_and_last_updated_at"
+  add_index "topics", ["user_id"], :name => "index_topics_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "login"
@@ -147,6 +159,8 @@ ActiveRecord::Schema.define(:version => 20130217032613) do
     t.string   "bio"
     t.string   "display_name"
     t.string   "permalink"
+    t.integer  "score",                                   :default => 0
+    t.integer  "level"
   end
 
   add_index "users", ["last_seen_at"], :name => "index_users_on_last_seen_at"
