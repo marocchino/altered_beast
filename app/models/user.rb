@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
 
   belongs_to :site, :counter_cache => true
   belongs_to :level
+  has_many :events, :dependent => :destroy
+
   validates_presence_of :site_id
 
   has_many :posts, :order => "#{Post.table_name}.created_at desc"
