@@ -88,4 +88,22 @@ class User < ActiveRecord::Base
     options[:except] += [:email, :login_key, :login_key_expires_at, :password_hash, :openid_url, :activated, :admin]
     super
   end
+
+  def add_points(new_points, event_string)
+    update_score_and_level(new_points)
+    log_event(new_points, event_string)
+  end
+  private
+  def update_score_and_level(new_points)
+    new_score = self.score += new_points
+    self.update_attribute :score, new_score
+    new_level = Level.fund_level_for_score(new_score)
+    if new_level &&
+      (!self.level || new_level.number > self.level.number)
+      self.update_attribute(:level_id, new_level.id)
+    end
+  end
+  def log_event(points, event_string)
+    events.create(:points => points, :text => event_string)
+  end
 end
