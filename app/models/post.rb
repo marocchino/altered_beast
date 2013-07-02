@@ -18,6 +18,7 @@ class Post < ActiveRecord::Base
   validate :topic_is_not_locked
 
   after_create  :update_cached_fields
+  after_create  :award_user_point
   after_destroy :update_cached_fields
 
   attr_accessible :body
@@ -26,7 +27,7 @@ class Post < ActiveRecord::Base
     # had to change the other join string since it conflicts when we bring parents in
     options[:conditions] ||= ["LOWER(#{Post.table_name}.body) LIKE ?", "%#{query}%"] unless query.blank?
     options[:select]     ||= "#{Post.table_name}.*, #{Topic.table_name}.title as topic_title, f.name as forum_name"
-    options[:joins]      ||= "inner join #{Topic.table_name} on #{Post.table_name}.topic_id = #{Topic.table_name}.id " + 
+    options[:joins]      ||= "inner join #{Topic.table_name} on #{Post.table_name}.topic_id = #{Topic.table_name}.id " +
                              "inner join #{Forum.table_name} as f on #{Topic.table_name}.forum_id = f.id"
     options[:order]      ||= "#{Post.table_name}.created_at DESC"
     options[:count]      ||= {:select => "#{Post.table_name}.id"}
@@ -39,10 +40,14 @@ class Post < ActiveRecord::Base
 
   protected
 
+  def award_user_point
+    user.add_points(POST_BONUS, "야호 뎃글 ㄱㅅㄱㅅ!")
+  end
+
     def update_cached_fields
       topic.update_cached_post_fields(self)
     end
-  
+
     def topic_is_not_locked
       errors.add(:base, "Topic is locked") if topic && topic.locked? && topic.posts_count > 0
     end
