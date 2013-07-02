@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   friendly_id :login, :use => :scoped, :slug_column => :permalink, :scope => :site
 
   attr_readonly :posts_count, :last_seen_at
-  after_create :award_signup_point
+  after_create :award_signup_points
 
   scope :named_like, lambda { |name| where("users.display_name like ? or users.login like ?", "#{name}%", "#{name}%") }
   scope :online, lambda { where("users.last_seen_at >= ?", 10.minutes.ago.utc) }
@@ -96,9 +96,13 @@ class User < ActiveRecord::Base
     log_event(new_points, event_string)
   end
 
+  def deduct_points(new_points, event_string)
+    add_points(-new_points, event_string)
+  end
+
   private
-  def award_signup_point
-    add_point(SIGNUP_BONUS, "야호! 가입 ㅊㅋㅊㅋ!")
+  def award_signup_points
+    add_points(SIGNUP_BONUS, "야호! 가입 ㅊㅋㅊㅋ!")
   end
 
   def update_score_and_level(new_points)

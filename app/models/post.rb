@@ -18,8 +18,9 @@ class Post < ActiveRecord::Base
   validate :topic_is_not_locked
 
   after_create  :update_cached_fields
-  after_create  :award_user_point
+  after_create  :award_user_points
   after_destroy :update_cached_fields
+  after_destroy :deduct_user_points
 
   attr_accessible :body
 
@@ -40,8 +41,12 @@ class Post < ActiveRecord::Base
 
   protected
 
-  def award_user_point
+  def award_user_points
     user.add_points(POST_BONUS, "야호 뎃글 ㄱㅅㄱㅅ!")
+  end
+
+  def deduct_user_points
+    user.deduct_points(POST_BONUS, "야호 차감차감!")
   end
 
     def update_cached_fields
