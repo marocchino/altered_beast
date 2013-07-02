@@ -71,6 +71,7 @@ class User < ActiveRecord::Base
     now = Time.now.utc
     self.class.where(:id => id).update_all(:last_seen_at => now)
     write_attribute(:last_seen_at, now)
+    award_login_bonus!
   end
 
   def to_param
@@ -98,6 +99,14 @@ class User < ActiveRecord::Base
 
   def deduct_points(new_points, event_string)
     add_points(-new_points, event_string)
+  end
+
+  def award_login_bonus!
+    unless last_login_bonus_awarded_at &&
+      last_login_bonus_awarded_at > 1.day.ago.utc
+      add_points(LOGIN_BONUS, "로그인 보너스 지급!")
+      write_attribute(:last_login_bonus_awarded_at, Time.now.utc)
+    end
   end
 
   private
