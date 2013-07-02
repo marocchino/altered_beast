@@ -3,11 +3,11 @@ class Topic < ActiveRecord::Base
 
   before_validation :set_default_attributes, :on => :create
 
-  after_create   :create_initial_post
+  after_create   :create_initial_post, :award_user_points
   before_update  :check_for_moved_forum
   after_update   :set_post_forum_id
   before_destroy :count_user_posts_for_counter_cache
-  after_destroy  :update_cached_forum_and_user_counts
+  after_destroy  :update_cached_forum_and_user_counts, :deduct_user_points
 
   # creator of forum topic
   belongs_to :user
@@ -22,12 +22,12 @@ class Topic < ActiveRecord::Base
 
   has_many :posts,       :order => "#{Post.table_name}.created_at", :dependent => :delete_all
   has_one  :recent_post, :order => "#{Post.table_name}.created_at DESC", :class_name => "Post"
-  
+
   has_many :voices, :through => :posts, :source => :user, :uniq => true
-  
+
   has_many :monitorships, :dependent => :delete_all
   has_many :monitoring_users, :through => :monitorships, :source => :user, :conditions => {"#{Monitorship.table_name}.active" => true}
-  
+
   validates_presence_of :user_id, :site_id, :forum_id, :title
   validates_presence_of :body, :on => :create
 
@@ -46,7 +46,7 @@ class Topic < ActiveRecord::Base
   def sticky?
     sticky == 1
   end
-  
+
   def hit!
     self.class.increment_counter :hits, id
   end
@@ -73,6 +73,14 @@ class Topic < ActiveRecord::Base
   end
 
   protected
+
+    def award_user_points
+      user.award_points(POST_BONUS, "글 삭제로 포인트 차감")
+    end
+
+    def deduct_user_points
+      user.deduct_points(POST_BONUS, "새 글작성 포인트 지급")
+    end
 
     def create_initial_post
       user.reply self, @body # unless locked?
