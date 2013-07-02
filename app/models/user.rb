@@ -25,6 +25,7 @@ class User < ActiveRecord::Base
   friendly_id :login, :use => :scoped, :slug_column => :permalink, :scope => :site
 
   attr_readonly :posts_count, :last_seen_at
+  after_create :award_signup_point
 
   scope :named_like, lambda { |name| where("users.display_name like ? or users.login like ?", "#{name}%", "#{name}%") }
   scope :online, lambda { where("users.last_seen_at >= ?", 10.minutes.ago.utc) }
@@ -40,6 +41,7 @@ class User < ActiveRecord::Base
     end
 
   end
+
 
   def available_forums
     @available_forums ||= site.ordered_forums - forums
@@ -93,7 +95,12 @@ class User < ActiveRecord::Base
     update_score_and_level(new_points)
     log_event(new_points, event_string)
   end
+
   private
+  def award_signup_point
+    add_point(SIGNUP_BONUS, "야호! 가입 ㅊㅋㅊㅋ!")
+  end
+
   def update_score_and_level(new_points)
     new_score = self.score += new_points
     self.update_attribute :score, new_score
