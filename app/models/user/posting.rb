@@ -1,7 +1,7 @@
 class User
   # Creates new topic and post.
   # Only..
-  #  - sets sticky/locked bits if you're a moderator or admin 
+  #  - sets sticky/locked bits if you're a moderator or admin
   #  - changes forum_id if you're an admin
   #
   def post(forum, attributes)

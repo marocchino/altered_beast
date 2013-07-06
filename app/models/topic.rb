@@ -75,12 +75,12 @@ class Topic < ActiveRecord::Base
   protected
 
     def award_user_points
-      user.award_points(POST_BONUS, "글 삭제로 포인트 차감")
+      user.add_points(POST_BONUS, "새 글작성 포인트 지급")
       user.award_badge("icebraker") if user.topics.count == 3
     end
 
     def deduct_user_points
-      user.deduct_points(POST_BONUS, "새 글작성 포인트 지급")
+      user.deduct_points(POST_BONUS, "글 삭제로 포인트 차감")
     end
 
     def create_initial_post

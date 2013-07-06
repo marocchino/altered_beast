@@ -44,7 +44,7 @@ class Post < ActiveRecord::Base
   def award_user_points
     user.add_points(POST_BONUS, "야호 뎃글 ㄱㅅㄱㅅ!")
     user.award_badge('chatterbox') if user.reload.posts_count == 5
-    if topic.post.count(:conditions => ['user_id != ?', topic.user.id]) == 10
+    if topic.posts.count(:conditions => ['user_id != ?', topic.user.id]) == 10
       topic.user.award_badge('talk_of_the_town')
     end
   end

@@ -23,6 +23,16 @@
       </div>
 
       <div id="right">
+        <% if current_user %>
+          <div id="notice">
+            <strong>내 포인트</strong>
+            <div id="your_score">
+              <h3 class="points"><%= current_user.score %></h3>
+              <h4>point</h4>
+              <h3 class="level">level: <%= current_user.level.display_name %></h3>
+            </div>
+          </div>
+        <% end %>
         <%= yield(:right) %>
       </div>
 

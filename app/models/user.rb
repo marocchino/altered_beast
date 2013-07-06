@@ -125,7 +125,7 @@ class User < ActiveRecord::Base
   def update_score_and_level(new_points)
     new_score = self.score += new_points
     self.update_attribute :score, new_score
-    new_level = Level.fund_level_for_score(new_score)
+    new_level = Level.level_for_score(new_score)
     if new_level &&
       (!self.level || new_level.number > self.level.number)
       self.update_attribute(:level_id, new_level.id)
