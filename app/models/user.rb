@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
   belongs_to :site, :counter_cache => true
   belongs_to :level
   has_many :events, :dependent => :destroy
+  has_many :achievements
 
   validates_presence_of :site_id
 
@@ -107,6 +108,11 @@ class User < ActiveRecord::Base
       add_points(LOGIN_BONUS, "로그인 보너스 지급!")
       write_attribute(:last_login_bonus_awarded_at, Time.now.utc)
     end
+  end
+
+  def award_badge(name)
+    badge = Badge.fnid_by_name(name)
+    achievements.create(:badge => badge)
   end
 
   private
