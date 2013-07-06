@@ -76,6 +76,7 @@ class Topic < ActiveRecord::Base
 
     def award_user_points
       user.award_points(POST_BONUS, "글 삭제로 포인트 차감")
+      user.award_badge("icebraker") if user.topics.count == 3
     end
 
     def deduct_user_points

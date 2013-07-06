@@ -112,7 +112,9 @@ class User < ActiveRecord::Base
 
   def award_badge(name)
     badge = Badge.fnid_by_name(name)
-    achievements.create(:badge => badge)
+    unless achievements.find_by_badge_id(badge.id)
+      achievements.create(:badge => badge)
+    end
   end
 
   private
